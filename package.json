@@ -4,7 +4,7 @@
   "description": "La API del proyecto de 2do Parcial para la materia de Desarrollo de Aplicaciones Empresariales",
   "main": "main.js",
   "scripts": {
-	"start": "node main.js",
+    "start": "node main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
