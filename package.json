@@ -1,0 +1,15 @@
+{
+  "name": "node-webapi",
+  "version": "1.0.0",
+  "description": "La API del proyecto de 2do Parcial para la materia de Desarrollo de Aplicaciones Empresariales",
+  "main": "main.js",
+  "scripts": {
+	"start": "node main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}
