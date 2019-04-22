@@ -18,7 +18,7 @@ app.use(bodyParser.json());
 app.post('/api/login', LOGIN.login);
 app.post('/api/signup', LOGIN.signup);
 
-mongoose.connect('mongodb://localhost:27017/appEmpresariales', { useNewUrlParser: true }, (err) => {
+mongoose.connect(CONFIG.database.connectionString, { useNewUrlParser: true }, (err) => {
     if (err) {
         console.log(`Error al conectar a la base de datos: ${err}`);
     }
