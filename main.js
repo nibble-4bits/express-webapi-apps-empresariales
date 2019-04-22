@@ -6,3 +6,8 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.listen(port, () => console.log(`Servidor corriendo en puerto ${port}`));
+
+app.use(/\/(\w+\/?)+/, (req, res, next) => {
+    res.send(`Accediste a ${req.baseUrl}`);
+    next();
+});
