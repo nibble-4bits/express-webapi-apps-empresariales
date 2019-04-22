@@ -12,7 +12,7 @@ const UsuarioSchema = new mongoose.Schema({
 });
 
 // Agregamos el plugin que permite que cada _id sea autoincrementable y numérico
-UsuarioSchema.plugin(autoIncrement.plugin, {modelName: 'Usuario'});
+UsuarioSchema.plugin(autoIncrement.plugin, { modelName: 'Usuario' });
 
 module.exports = {
     modeloUsuario: mongoose.model('Usuario', UsuarioSchema),
