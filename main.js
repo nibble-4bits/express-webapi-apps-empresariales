@@ -30,4 +30,7 @@ mongoose.connect(CONFIG.database.connectionString, { useNewUrlParser: true }, (e
     }
 });
 
+app2.get('/', (req, res) => {
+    res.send('Tambien sirve el servidor del puerto 4000');
+});
 app2.listen(4000, () => console.log(`Servidor corriendo en puerto ${4000}`));
