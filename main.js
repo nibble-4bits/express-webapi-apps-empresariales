@@ -8,6 +8,7 @@ const CONFIG = require('./config');
 const LOGIN = require('./controllers/login');
 
 const app = express();
+const app2 = express();
 
 app.use(bodyParser.json());
 
@@ -28,3 +29,5 @@ mongoose.connect(CONFIG.database.connectionString, { useNewUrlParser: true }, (e
         app.listen(CONFIG.port, () => console.log(`Servidor corriendo en puerto ${CONFIG.port}`));
     }
 });
+
+app2.listen(4000, () => console.log(`Servidor corriendo en puerto ${4000}`));
