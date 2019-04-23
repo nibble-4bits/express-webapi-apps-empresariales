@@ -8,7 +8,6 @@ const CONFIG = require('./config');
 const LOGIN = require('./controllers/login');
 
 const app = express();
-const app2 = express();
 
 app.use(bodyParser.json());
 
@@ -17,7 +16,9 @@ app.use(bodyParser.json());
 //     next();
 // });
 app.post('/api/login', LOGIN.login);
+app.get('/api/activateAccount/:usuarioId/:codigoSecreto', LOGIN.activateAccount)
 app.post('/api/signup', LOGIN.signup);
+app.post('/api/passwordRecovery', LOGIN.passwordRecovery);
 
 mongoose.connect(CONFIG.database.connectionString, { useNewUrlParser: true }, (err) => {
     if (err) {
@@ -29,8 +30,3 @@ mongoose.connect(CONFIG.database.connectionString, { useNewUrlParser: true }, (e
         app.listen(CONFIG.port, () => console.log(`Servidor corriendo en puerto ${CONFIG.port}`));
     }
 });
-
-app2.get('/', (req, res) => {
-    res.send('Tambien sirve el servidor del puerto 4000');
-});
-app2.listen(4000, () => console.log(`Servidor corriendo en puerto ${4000}`));
