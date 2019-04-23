@@ -8,7 +8,8 @@ const UsuarioSchema = new mongoose.Schema({
     Apellidos: String,
     Contrasena: String,
     Email: { type: String, unique: true },
-    Tipo: Number // 0 - comun, 1 - IT, 2 - IT Manager
+    Tipo: Number, // 0 - comun, 1 - IT, 2 - IT Manager
+    Activo: Boolean
 });
 
 // Agregamos el plugin que permite que cada _id sea autoincrementable y numérico
