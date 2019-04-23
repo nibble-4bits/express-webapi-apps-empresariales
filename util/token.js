@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 
 const secretKey = 'LLAVE_SECRETA_API_REST';
+'use strict';
+
 const opcionesToken = {
     expiresIn: '30m' // el token expira a los 30 minutos
 };
