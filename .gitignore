@@ -56,3 +56,9 @@ typings/
 
 # next.js build output
 .next
+
+# .env files
+.env
+
+# my own ignores
+repo_docs/
