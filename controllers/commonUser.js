@@ -48,6 +48,7 @@ const commonUserController = {
                     });
                 }
                 else {
+                    new aws.Credentials();
                     let s3 = new aws.S3({
                         secretAccessKey: CONFIG.cloudCube.secretKey,
                         accessKeyId: CONFIG.cloudCube.accessKey,
@@ -60,7 +61,7 @@ const commonUserController = {
                     console.log('Key: ' + key);
                     console.log('FilePath: ' + filePath);
 
-                    let params = { Bucket: myBucket, Key: key, Body: archivo.data };
+                    let params = { Bucket: myBucket, Key: key/*, ContentLength: archivo.data.length*/, Body: archivo };
                     s3.putObject(params, function (err, data) {
                         if (err) {
                             console.log(err)
