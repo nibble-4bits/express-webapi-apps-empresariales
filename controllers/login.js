@@ -8,6 +8,7 @@ const TOKEN = require('../util/token');
 const MAIL = require('../util/mail');
 const CONFIG = require('../config');
 const TASK_SCHEDULER = require('../util/taskScheduler');
+const ERROR = require('../util/error');
 
 let arreglo = [];
 
@@ -20,20 +21,21 @@ const loginController = {
 
         USUARIO.modeloUsuario.findOne(query, (err, queryResult) => {
             if (err) {
-                res.status(hsc.INTERNAL_SERVER_ERROR).send({ respuesta: `Error al buscar usuario en la base de datos: ${err}` });
-                return;
+                return ERROR.sendErrorResponse(res, 
+                    'Error al intentar iniciar sesión', 
+                    `Error al buscar usuario en la base de datos: ${err}`);
             }
             
             if (queryResult) {
                 if (queryResult.Activo) { // si la cuenta fue activada, enviamos el JWT
-                    res.status(hsc.OK).send({ token: TOKEN.createToken(queryResult) });
+                    res.status(hsc.OK).json({ token: TOKEN.createToken(queryResult) });
                 }
                 else { // sino, enviamos un mensaje que explica que la cuenta no ha sido activada
-                    res.status(hsc.FORBIDDEN).send({ respuesta: "Su cuenta no ha sido activada" });
+                    res.status(hsc.FORBIDDEN).json({ respuesta: "Su cuenta no ha sido activada" });
                 }
             }
             else {
-                res.status(hsc.NOT_FOUND).send({ respuesta: "El email y/o la contraseña no coinciden" });
+                res.status(hsc.NOT_FOUND).json({ respuesta: "El email y/o la contraseña no coinciden" });
             }
         });
     },
@@ -49,22 +51,25 @@ const loginController = {
 
         nuevoUsuario.save((err, usuarioStored) => {
             if (err) {
-                res.status(hsc.INTERNAL_SERVER_ERROR).send({ respuesta: `Error al guardar nuevo usuario en la base de datos: ${err}` });
-                return;
+                return ERROR.sendErrorResponse(res, 
+                    'Error al intentar registrar una nueva cuenta', 
+                    `Error al guardar nuevo usuario en la base de datos: ${err}`);
             }
 
-            const objetoArreglo = { usuarioId: usuarioStored._id, codigoSecreto: randString.generate() };
-            arreglo.push(objetoArreglo);
+            const usuarioNoRegistrado = { usuarioId: usuarioStored._id, codigoSecreto: randString.generate() };
+            arreglo.push(usuarioNoRegistrado);
 
             // Programamos una tarea que se ejecutará una sola vez en 10 minutos
+            // Si el usuario no ha activado su cuenta después de 10 minutos, tendrá que volver a registrarse
             TASK_SCHEDULER.scheduleTaskAndRunOnceIn10Minutes(() => {
-                const indice = arreglo.findIndex(x => { return x.codigoSecreto == objetoArreglo.codigoSecreto });
+                const indice = arreglo.findIndex(x => { return x.codigoSecreto == usuarioNoRegistrado.codigoSecreto });
                 if (indice >= 0) {
-                    arreglo.splice(indice, 1);
+                    arreglo.splice(indice, 1); // lo eliminamos del arreglo
+                    USUARIO.modeloUsuario.findByIdAndDelete(usuarioNoRegistrado.usuarioId); // eliminamos al usuario de la base de datos
                 }
             });
 
-            const direccionConfirmacion = `${CONFIG.apiBaseURL}/activateAccount/${objetoArreglo.usuarioId}/${objetoArreglo.codigoSecreto}`;
+            const direccionConfirmacion = `${CONFIG.apiBaseURL}/activateAccount/${usuarioNoRegistrado.usuarioId}/${usuarioNoRegistrado.codigoSecreto}`;
             MAIL.sendMailHTML(usuarioStored.Email,
                 'Su cuenta ha sido creada con éxito',
                 `<h1>¡Genial!</h1>
@@ -77,7 +82,8 @@ const loginController = {
                     <li>Nombre: ${usuarioStored.Nombre}</li>
                     <li>Apellidos: ${usuarioStored.Apellidos}</li>
                     <li>Email: ${usuarioStored.Email}</li>
-                    <li>Contraseña: ${usuarioStored.Contrasena.replace(/./g, '•')} (por razones de seguridad no mostramos su contraseña)</li>
+                    <li>Contraseña: ${usuarioStored.Contrasena.replace(/./g, '•')} 
+                    (por razones de seguridad no mostramos su contraseña)</li>
                 </ul>`
             );
             res.sendStatus(hsc.CREATED);
@@ -90,8 +96,9 @@ const loginController = {
 
         USUARIO.modeloUsuario.findOne(query, (err, queryResult) => {
             if (err) {
-                res.status(hsc.INTERNAL_SERVER_ERROR).send({ respuesta: `Error al buscar usuario en la base de datos: ${err}` });
-                return;
+                return ERROR.sendErrorResponse(res, 
+                    'Error al intentar registrar una nueva cuenta', 
+                    `Error al buscar usuario en la base de datos: ${err}`);
             }
 
             if (queryResult) {
@@ -100,10 +107,10 @@ const loginController = {
                     `<h1>Recupere su contraseña</h1>
                     <p>Su contraseña es: ${queryResult.Contrasena}</p>
                     <p>Si usted no ha solicitado recuperar su contraseña, puede ignorar este correo</p>`);
-                res.status(hsc.OK).send({ respuesta: "Se ha enviado su contraseña al correo" });
+                res.status(hsc.OK).json({ respuesta: "Se ha enviado su contraseña al correo" });
             }
             else {
-                res.status(hsc.NOT_FOUND).send({ respuesta: "El correo electrónico introducido no existe" });
+                res.status(hsc.NOT_FOUND).json({ respuesta: "El correo electrónico introducido no existe" });
             }
         });
     },
@@ -117,14 +124,16 @@ const loginController = {
 
             USUARIO.modeloUsuario.findByIdAndUpdate(req.params.usuarioId, { Activo: true }, (err, queryResult) => {
                 if (err) {
-                    res.status(hsc.INTERNAL_SERVER_ERROR).send({ respuesta: `Error al actualizar usuario en la base de datos: ${err}` });
+                    return ERROR.sendErrorResponse(res, 
+                        'Error al intentar activar su cuenta', 
+                        `Error al actualizar usuario en la base de datos: ${err}`);
                 }
 
-                res.sendStatus(hsc.OK);
+                res.status(hsc.OK).json('¡Su cuenta ha sido activada con éxito!');
             });
         }
         else {
-            res.send('El enlace para activar su cuenta ha caducado');
+            res.json('El enlace para activar su cuenta ha caducado');
         }
     }
 };

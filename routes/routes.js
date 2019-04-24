@@ -5,6 +5,7 @@ const express = require('express');
 const CONFIG = require('../config');
 const LOGIN = require('../controllers/login');
 const COMMON_USER = require('../controllers/commonUser');
+const IT_USER = require('../controllers/ITUser');
 const AUTH = require('../middleware/auth');
 
 const route = express.Router();
@@ -17,6 +18,9 @@ route.get('/activateAccount/:usuarioId/:codigoSecreto', LOGIN.activateAccount)
 
 /* RUTAS USUARIO COMUN */
 route.get('/commonUser/getSolicitudes/:idUsuario'/*, AUTH*/, COMMON_USER.getAllSolicitudes);
-route.post('/commonUser/sendSolicitud', COMMON_USER.addNewSolicitud);
+route.post('/commonUser/sendSolicitud'/*, AUTH*/, COMMON_USER.addNewSolicitud);
+
+/* RUTAS USUARIO IT */
+route.get('/itUser/getDocument/:idSolicitud', IT_USER.getDocument);
 
 module.exports = route;

@@ -10,13 +10,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.442.0",
     "body-parser": "^1.18.3",
+    "dotenv": "^7.0.0",
     "express": "^4.16.4",
     "express-fileupload": "^1.1.4",
     "http-status-codes": "^1.3.2",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.5.2",
     "mongoose-auto-increment-reworked": "^1.2.1",
+    "multer": "^1.4.1",
+    "multer-s3": "^2.9.0",
     "node-cron": "^2.0.3",
     "nodemailer": "^6.1.1",
     "randomstring": "^1.1.5"

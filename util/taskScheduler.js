@@ -2,9 +2,9 @@
 
 const cron = require('node-cron');
 
-const taskScheduler = {
+const taskSchedulerFunctions = {
     /**
-     * Esta función llama a una función que se ejecutará una sola vez dentro de 10 minutos
+     * Esta función ejecuta una función que se ejecutará una sola vez dentro de 10 minutos
      * @param {Function} taskToRun La función que está programada para ejecutarse en 10 minutos
      */
     scheduleTaskAndRunOnceIn10Minutes: function (taskToRun) {
@@ -17,4 +17,4 @@ const taskScheduler = {
     }
 };
 
-module.exports = taskScheduler;
+module.exports = taskSchedulerFunctions;
