@@ -48,20 +48,18 @@ const commonUserController = {
                     });
                 }
                 else {
-                    aws.config.update({
+                    let s3 = new aws.S3({
                         secretAccessKey: CONFIG.cloudCube.secretKey,
                         accessKeyId: CONFIG.cloudCube.accessKey,
                         region: 'us-east-1'
                     });
-
-                    let s3 = new aws.S3();
                     let myBucket = 'a0ojbietvhmi';
                     let key = `/public/${randString.generate()}.${archivo.name.split('.')[1]}`;
                     filePath = `${CONFIG.fileRepoPath}${key}`;
 
                     console.log('Key: ' + key);
-                    console.log('FilePath: ' + filePath);                    
-			
+                    console.log('FilePath: ' + filePath);
+
                     let params = { Bucket: myBucket, Key: key, Body: archivo.data };
                     s3.putObject(params, function (err, data) {
                         if (err) {
