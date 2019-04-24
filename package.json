@@ -12,6 +12,7 @@
   "dependencies": {
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
+    "express-fileupload": "^1.1.4",
     "http-status-codes": "^1.3.2",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.5.2",

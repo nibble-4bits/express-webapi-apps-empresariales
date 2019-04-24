@@ -11,9 +11,9 @@ const TASK_SCHEDULER = require('../util/taskScheduler');
 
 let arreglo = [];
 
-const login = {
+const loginController = {
     login: function (req, res) {
-        let query = {
+        const query = {
             Email: req.body.email,
             Contrasena: req.body.contrasena
         };
@@ -21,8 +21,9 @@ const login = {
         USUARIO.modeloUsuario.findOne(query, (err, queryResult) => {
             if (err) {
                 res.status(hsc.INTERNAL_SERVER_ERROR).send({ respuesta: `Error al buscar usuario en la base de datos: ${err}` });
+                return;
             }
-
+            
             if (queryResult) {
                 if (queryResult.Activo) { // si la cuenta fue activada, enviamos el JWT
                     res.status(hsc.OK).send({ token: TOKEN.createToken(queryResult) });
@@ -38,30 +39,32 @@ const login = {
     },
     signup: function (req, res) {
         // Creamos un nuevo modelo e inicializamos sus propiedades a las que hayamos recibido en el JSON del request
-        let nuevoUsuario = new USUARIO.modeloUsuario();
-        nuevoUsuario.Nombre = req.body.nombre;
-        nuevoUsuario.Apellidos = req.body.apellidos;
-        nuevoUsuario.Contrasena = req.body.contrasena;
-        nuevoUsuario.Email = req.body.email;
-        nuevoUsuario.Tipo = USUARIO.tipoUsuario.COMUN; // todos los usuarios que se registren son del tipo COMUN
+        let nuevoUsuario = new USUARIO.modeloUsuario({
+            Nombre: req.body.nombre,
+            Apellidos: req.body.apellidos,
+            Contrasena: req.body.contrasena,
+            Email: req.body.email,
+            Tipo: USUARIO.tipoUsuario.COMUN
+        });
 
         nuevoUsuario.save((err, usuarioStored) => {
             if (err) {
                 res.status(hsc.INTERNAL_SERVER_ERROR).send({ respuesta: `Error al guardar nuevo usuario en la base de datos: ${err}` });
+                return;
             }
 
-            let objetoArreglo = { usuarioId: usuarioStored._id, codigoSecreto: randString.generate() };
+            const objetoArreglo = { usuarioId: usuarioStored._id, codigoSecreto: randString.generate() };
             arreglo.push(objetoArreglo);
 
             // Programamos una tarea que se ejecutará una sola vez en 10 minutos
             TASK_SCHEDULER.scheduleTaskAndRunOnceIn10Minutes(() => {
-                let indice = arreglo.findIndex(x => { return x.codigoSecreto == objetoArreglo.codigoSecreto });
+                const indice = arreglo.findIndex(x => { return x.codigoSecreto == objetoArreglo.codigoSecreto });
                 if (indice >= 0) {
                     arreglo.splice(indice, 1);
                 }
             });
 
-            let direccionConfirmacion = `${CONFIG.apiBaseURL}/activateAccount/${objetoArreglo.usuarioId}/${objetoArreglo.codigoSecreto}`;
+            const direccionConfirmacion = `${CONFIG.apiBaseURL}/activateAccount/${objetoArreglo.usuarioId}/${objetoArreglo.codigoSecreto}`;
             MAIL.sendMailHTML(usuarioStored.Email,
                 'Su cuenta ha sido creada con éxito',
                 `<h1>¡Genial!</h1>
@@ -81,13 +84,14 @@ const login = {
         });
     },
     passwordRecovery: function (req, res) {
-        let query = {
+        const query = {
             Email: req.body.email
         };
 
         USUARIO.modeloUsuario.findOne(query, (err, queryResult) => {
             if (err) {
                 res.status(hsc.INTERNAL_SERVER_ERROR).send({ respuesta: `Error al buscar usuario en la base de datos: ${err}` });
+                return;
             }
 
             if (queryResult) {
@@ -104,7 +108,7 @@ const login = {
         });
     },
     activateAccount: function (req, res) {
-        let indice = arreglo.findIndex(x => {
+        const indice = arreglo.findIndex(x => {
             return x.usuarioId == req.params.usuarioId && x.codigoSecreto == req.params.codigoSecreto
         });
 
@@ -125,4 +129,4 @@ const login = {
     }
 };
 
-module.exports = login;
+module.exports = loginController;
