@@ -58,6 +58,9 @@ const commonUserController = {
                     let myBucket = 'a0ojbietvhmi';
                     let key = `public/${randString.generate()}.${archivo.name.split('.')[1]}`;
                     filePath = `${CONFIG.fileRepoPath}/${key}`;
+
+                    console.log('Key: ' + key);
+                    console.log('FilePath: ' + filePath);                    
 			
                     let params = { Bucket: myBucket, Key: key, Body: archivo.data };
                     s3.putObject(params, function (err, data) {
