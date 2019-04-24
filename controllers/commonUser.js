@@ -56,8 +56,8 @@ const commonUserController = {
 
                     let s3 = new aws.S3();
                     let myBucket = 'a0ojbietvhmi';
-                    let key = `public/${randString.generate()}.${archivo.name.split('.')[1]}`;
-                    filePath = `${CONFIG.fileRepoPath}/${key}`;
+                    let key = `/public/${randString.generate()}.${archivo.name.split('.')[1]}`;
+                    filePath = `${CONFIG.fileRepoPath}${key}`;
 
                     console.log('Key: ' + key);
                     console.log('FilePath: ' + filePath);                    
