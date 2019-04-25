@@ -5,7 +5,7 @@ const fs = require('fs');
 const aws = require('aws-sdk');
 const mimeTypes = require('mime-types');
 
-const CONFIG = require('../config');
+const CONFIG = require('../../config');
 
 const fileUploadUtilController = {
     /**
