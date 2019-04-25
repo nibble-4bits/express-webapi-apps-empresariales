@@ -60,7 +60,7 @@ const commonUserController = {
                     console.log('Key: ' + key);
                     console.log('FilePath: ' + filePath);
 
-                    let params = { Bucket: myBucket, Key: key, ContentLength: archivo.data.length, Body: archivo };
+                    let params = { Bucket: myBucket, Key: key, ContentLength: archivo.data.length, Body: archivo.data };
                     s3.putObject(params, function (err, data) {
                         if (err) {
                             console.log(err)
