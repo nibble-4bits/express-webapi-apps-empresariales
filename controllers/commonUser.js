@@ -53,8 +53,8 @@ const commonUserController = {
                         accessKeyId: CONFIG.cloudCube.accessKey,
                         region: 'us-east-1'
                     });
-                    let myBucket = 'a0ojbietvhmi';
-                    let key = `public/${randString.generate()}.${archivo.name.split('.')[1]}`;
+                    let myBucket = 'cloud-cube';
+                    let key = `a0ojbietvhmi/public/${randString.generate()}.${archivo.name.split('.')[1]}`;
                     filePath = `${CONFIG.fileRepoPath}/${key}`;
 
                     console.log('Key: ' + key);
