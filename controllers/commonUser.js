@@ -1,12 +1,9 @@
 'use strict';
 
 const hsc = require('http-status-codes');
-const randString = require('randomstring');
-const fs = require('fs');
-const aws = require('aws-sdk');
 
 const SOLICITUD = require('../models/solicitud');
-const CONFIG = require('../config');
+const FILE_UPLOAD = require('./util/fileUpload');
 const ERROR = require('../util/error');
 
 const commonUserController = {
@@ -31,47 +28,7 @@ const commonUserController = {
         });
     },
     addNewSolicitud: function (req, res) {
-        let filePath = null;
-
-        for (const file in req.files) {
-            if (req.files.hasOwnProperty(file)) {
-                const archivo = req.files[file];
-                if (CONFIG.uploadLocally === true) {
-                    // Buscamos si el usuario envió algún archivo, 
-                    // lo guardamos en la carpeta configurada como repositorio 
-                    // y creamos la ruta que se guardará en base de datos
-                    filePath = `${CONFIG.fileRepoPath}/${randString.generate()}.${archivo.name.split('.')[1]}`;
-                    fs.writeFile(filePath, archivo.data, err => {
-                        if (err) {
-                            console.log(err);
-                        }
-                    });
-                }
-                else {
-                    let s3 = new aws.S3({
-                        secretAccessKey: CONFIG.cloudCube.secretKey,
-                        accessKeyId: CONFIG.cloudCube.accessKey,
-                        region: 'us-east-1'
-                    });
-                    let myBucket = 'cloud-cube';
-                    let key = `a0ojbietvhmi/public/${randString.generate()}.${archivo.name.split('.')[1]}`;
-                    filePath = `${CONFIG.fileRepoPath}/${key}`;
-
-                    console.log('Key: ' + key);
-                    console.log('FilePath: ' + filePath);
-
-                    let params = { Bucket: myBucket, Key: key, ContentLength: archivo.data.length, Body: archivo.data };
-                    s3.putObject(params, function (err, data) {
-                        if (err) {
-                            console.log(err)
-                        }
-                        else {
-                            console.log("Successfully uploaded data to myBucket/myKey");
-                        }
-                    });
-                }
-            }
-        }
+        const filePath = FILE_UPLOAD.uploadFile(req.files);
 
         let nuevaSolicitud = new SOLICITUD.modeloSolicitud({
             IdUsuario: req.body.idUsuario,
