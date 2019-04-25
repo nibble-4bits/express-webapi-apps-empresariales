@@ -36,7 +36,7 @@ const commonUserController = {
         for (const file in req.files) {
             if (req.files.hasOwnProperty(file)) {
                 const archivo = req.files[file];
-                if (CONFIG.uploadLocally) {
+                if (CONFIG.uploadLocally === true) {
                     // Buscamos si el usuario envió algún archivo, 
                     // lo guardamos en la carpeta configurada como repositorio 
                     // y creamos la ruta que se guardará en base de datos
@@ -48,7 +48,6 @@ const commonUserController = {
                     });
                 }
                 else {
-                    new aws.Credentials();
                     let s3 = new aws.S3({
                         secretAccessKey: CONFIG.cloudCube.secretKey,
                         accessKeyId: CONFIG.cloudCube.accessKey,
@@ -61,7 +60,7 @@ const commonUserController = {
                     console.log('Key: ' + key);
                     console.log('FilePath: ' + filePath);
 
-                    let params = { Bucket: myBucket, Key: key/*, ContentLength: archivo.data.length*/, Body: archivo };
+                    let params = { Bucket: myBucket, Key: key, ContentLength: archivo.data.length, Body: archivo };
                     s3.putObject(params, function (err, data) {
                         if (err) {
                             console.log(err)
