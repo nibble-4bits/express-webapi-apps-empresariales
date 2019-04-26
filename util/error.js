@@ -13,7 +13,7 @@ const errorFunctions = {
         res.status(hsc.INTERNAL_SERVER_ERROR).json({ 
             respuesta: {
                 statusCode: hsc.INTERNAL_SERVER_ERROR,
-                message: message,
+                friendyMessage: message,
                 error: error
             }
         });

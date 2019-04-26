@@ -10,19 +10,52 @@ const CONFIG = require('../config');
 const TASK_SCHEDULER = require('../util/taskScheduler');
 const ERROR = require('../util/error');
 
-const ITUserControler = {
+const ITUserController = {
+    getAllUnattendedSolicitudes: function (req, res) {
+        const query = {
+            FechaEnProceso: null,
+            UsuarioIT: null
+        };
+
+        SOLICITUD.modeloSolicitud.find(query, (err, queryResult) => {
+            if (err) {
+                return ERROR.sendErrorResponse(res,
+                    'Error al intentar buscar solicitudes no atendidas',
+                    `Error al buscar solicitudes en la base de datos: ${err}`);
+            }
+
+            res.status(hsc.OK).json({ solicitudesNoAtendidas: queryResult });
+        });
+    },
+    getAllMySolicitudes: function (req, res) {
+        const query = {
+            UsuarioIT: {
+                IdUsuarioIT: req.params.idUsuarioIT
+            }
+        };
+
+        SOLICITUD.modeloSolicitud.find(query, (err, queryResult) => {
+            if (err) {
+                return ERROR.sendErrorResponse(res,
+                    'Error al intentar buscar las solicitudes atendidas por usted',
+                    `Error al buscar solicitudes en la base de datos: ${err}`);
+            }
+
+            res.status(hsc.OK).json({ solicitudesAtendidas: queryResult });
+        });
+    },
     getDocument: function (req, res) {
-        
+        //req.params.usuarioId
     },
     addCommentSolicitud: function (req, res) {
 
     },
     assignFechaEnProceso: function (req, res) {
-        
+
     },
     assignFechaTerminado: function (req, res) {
-        
+
     }
 };
 
-module.exports = ITUserControler;
+module.exports = ITUserController;

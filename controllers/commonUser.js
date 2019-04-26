@@ -3,11 +3,11 @@
 const hsc = require('http-status-codes');
 
 const SOLICITUD = require('../models/solicitud');
-const FILE_UPLOAD = require('./util/fileUpload');
+const FILE_UPLOAD = require('../util/fileUpload');
 const ERROR = require('../util/error');
 
 const commonUserController = {
-    getAllSolicitudes: function (req, res) {
+    getAllMySolicitudes: function (req, res) {
         const query = {
             IdUsuario: req.params.idUsuario
         };
@@ -19,12 +19,7 @@ const commonUserController = {
                     `Error al buscar solicitudes en la base de datos: ${err}`);
             }
 
-            if (queryResult.length > 0) {
-                res.status(hsc.OK).json({ solicitudes: queryResult });
-            }
-            else {
-                res.status(hsc.NOT_FOUND).json({ respuesta: `No se encontraron solicitudes creadas por el usuario ${query.IdUsuario}` });
-            }
+            res.status(hsc.OK).json({ solicitudes: queryResult });
         });
     },
     addNewSolicitud: function (req, res) {
