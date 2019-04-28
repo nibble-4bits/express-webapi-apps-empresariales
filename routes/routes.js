@@ -24,7 +24,7 @@ route.post('/commonUser/sendSolicitud'/*, AUTH*/, COMMON_USER.addNewSolicitud);
 /* RUTAS USUARIO IT */
 route.get('/itUser/getUnattendedSolicitudes', IT_USER.getAllUnattendedSolicitudes);
 route.get('/itUser/getMySolicitudes/:idUsuarioIT', IT_USER.getAllMySolicitudes);
-route.get('/itUser/getDocument/:idSolicitud', IT_USER.getDocument);
+
 
 /* RUTAS USUARIO GERENTE IT */
 route.get('/managerUser/getSolicitudesByCommonUser/:nombre/:apellidos', MANAGER_USER.getSolicitudesByCommonUser);

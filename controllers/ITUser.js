@@ -12,6 +12,8 @@ const ERROR = require('../util/error');
 
 const ITUserController = {
     getAllUnattendedSolicitudes: function (req, res) {
+        // Solicitudes no atendidas son aquellas que aún no tienen una fecha en proceso 
+        // y no tienen un Usuario IT que las esté atendiendo
         const query = {
             FechaEnProceso: null,
             UsuarioIT: null
@@ -44,11 +46,8 @@ const ITUserController = {
             res.status(hsc.OK).json({ solicitudesAtendidas: queryResult });
         });
     },
-    getDocument: function (req, res) {
-        //req.params.usuarioId
-    },
-    addCommentSolicitud: function (req, res) {
-
+    addCommentToSolicitud: function (req, res) {
+        
     },
     assignFechaEnProceso: function (req, res) {
 
