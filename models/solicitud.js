@@ -10,7 +10,7 @@ const SolicitudSchema = new mongoose.Schema({
     FechaEnProceso: { type: Date, default: null },
     FechaTerminado: { type: Date, default: null },
     Razon: String,
-    ComentariosIT: Array,
+    ComentariosIT: Array, // Ejemplo: { Comentario: "Ejemplo Comentario", Fecha: 2019-04-28T22:35:23.904Z }
     RutaDocumento: { type: String, default: null },
     Prioridad: { type: Number, min: 0, max: 2 } // 0 - BAJA, 1 - MEDIA, 2 - ALTA
 });
