@@ -25,11 +25,10 @@ route.post('/commonUser/sendSolicitud'/*, AUTH*/, COMMON_USER.addNewSolicitud);
 route.get('/itUser/getUnattendedSolicitudes', IT_USER.getAllUnattendedSolicitudes);
 route.get('/itUser/getMySolicitudes/:idUsuarioIT', IT_USER.getAllMySolicitudes);
 
-
 /* RUTAS USUARIO GERENTE IT */
 route.get('/managerUser/getSolicitudesByCommonUser/:nombre/:apellidos', MANAGER_USER.getSolicitudesByCommonUser);
 route.get('/managerUser/getSolicitudesByITUser/:nombre/:apellidos', MANAGER_USER.getSolicitudesByITUser);
 route.get('/managerUser/getSolicitudesByDateRange/:startDate/:endDate', MANAGER_USER.getSolicitudesByDateRange);
-route.get('/managerUser/getSolicitudById/:idSolicitud', MANAGER_USER.getSolicitudesByCommonUser);
+route.get('/managerUser/getSolicitudById/:idSolicitud', MANAGER_USER.getSolicitudById);
 
 module.exports = route;
