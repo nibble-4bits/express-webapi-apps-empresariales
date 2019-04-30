@@ -8,6 +8,7 @@ const fileUpload = require('express-fileupload');
 
 const CONFIG = require('./config');
 const ROUTES = require('./routes/routes');
+const INITIALIZE = require('./initialize');
 
 const app = express();
 
@@ -27,3 +28,5 @@ mongoose.connect(CONFIG.database.connectionString, { useNewUrlParser: true }, (e
         app.listen(CONFIG.port, () => console.log(`Servidor corriendo en puerto ${CONFIG.port}`));
     }
 });
+
+INITIALIZE();
