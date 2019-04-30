@@ -1,21 +1,14 @@
 'use strict';
 
 const hsc = require('http-status-codes');
-const randString = require('randomstring');
 
-const USUARIO = require('../models/usuario');
 const SOLICITUD = require('../models/solicitud');
-const MAIL = require('../util/mail');
-const CONFIG = require('../config');
-const TASK_SCHEDULER = require('../util/taskScheduler');
 const ERROR = require('../util/error');
 
 const ITUserController = {
     getAllUnattendedSolicitudes: function (req, res) {
-        // Solicitudes no atendidas son aquellas que aún no tienen una fecha en proceso 
-        // y no tienen un Usuario IT que las esté atendiendo
+        // Solicitudes no atendidas son aquellas que no tienen un Usuario IT que las esté atendiendo
         const query = {
-            FechaEnProceso: null,
             UsuarioIT: null
         };
 
@@ -31,9 +24,7 @@ const ITUserController = {
     },
     getAllMySolicitudes: function (req, res) {
         const query = {
-            UsuarioIT: {
-                IdUsuarioIT: req.params.idUsuarioIT
-            }
+            'UsuarioIT.IdUsuarioIT': req.params.idUsuarioIT
         };
 
         SOLICITUD.modeloSolicitud.find(query, (err, queryResult) => {
@@ -46,14 +37,93 @@ const ITUserController = {
             res.status(hsc.OK).json({ solicitudesAtendidas: queryResult });
         });
     },
+    assignSolicitud: function (req, res) {
+        let updateQuery = {
+            UsuarioIT: { IdUsuarioIT: req.body.idUsuarioIT, NombreCompleto: req.body.nombreCompleto },
+        };
+
+        SOLICITUD.modeloSolicitud.findByIdAndUpdate(req.body.idSolicitud, updateQuery, { new: true }, (err, queryResult) => {
+            if (err) {
+                return ERROR.sendErrorResponse(res,
+                    `Error al intentar agregar comentario a la solicitud #${req.body.idSolicitud}`,
+                    `Error al agregar comentario a la solicitud ${req.body.idSolicitud} en la base de datos: ${err}`);
+            }
+
+            res.status(hsc.OK).json({ respuesta: queryResult });
+        });
+    },
     addCommentToSolicitud: function (req, res) {
-        
+        let updateQuery = {
+            $push: {
+                ComentariosIT: { Comentario: req.body.comentario, Fecha: new Date().toJSON() }
+            }
+        };
+
+        SOLICITUD.modeloSolicitud.findByIdAndUpdate(req.body.idSolicitud, updateQuery, (err, queryResult) => {
+            if (err) {
+                return ERROR.sendErrorResponse(res,
+                    `Error al intentar agregar comentario a la solicitud #${req.body.idSolicitud}`,
+                    `Error al agregar comentario a la solicitud ${req.body.idSolicitud} en la base de datos: ${err}`);
+            }
+
+            res.sendStatus(hsc.CREATED);
+        });
     },
     assignFechaEnProceso: function (req, res) {
+        let updateQuery;
+        let fechaActual = new Date().toJSON();
 
+        if (req.body.comentario) {
+            updateQuery = {
+                FechaEnProceso: fechaActual,
+                $push: {
+                    ComentariosIT: { Comentario: req.body.comentario, Fecha: fechaActual }
+                }
+            };
+        }
+        else {
+            updateQuery = {
+                FechaEnProceso: fechaActual
+            };
+        }
+
+        SOLICITUD.modeloSolicitud.findByIdAndUpdate(req.body.idSolicitud, updateQuery, { new: true }, (err, queryResult) => {
+            if (err) {
+                return ERROR.sendErrorResponse(res,
+                    `Error al intentar agregar comentario a la solicitud #${req.body.idSolicitud}`,
+                    `Error al agregar comentario a la solicitud ${req.body.idSolicitud} en la base de datos: ${err}`);
+            }
+
+            res.status(hsc.OK).json({ respuesta: queryResult });
+        });
     },
     assignFechaTerminado: function (req, res) {
+        let updateQuery;
+        let fechaActual = new Date().toJSON();
 
+        if (req.body.comentario) {
+            updateQuery = {
+                FechaTerminado: fechaActual,
+                $push: {
+                    ComentariosIT: { Comentario: req.body.comentario, Fecha: fechaActual }
+                }
+            };
+        }
+        else {
+            updateQuery = {
+                FechaTerminado: fechaActual
+            };
+        }
+
+        SOLICITUD.modeloSolicitud.findByIdAndUpdate(req.body.idSolicitud, updateQuery, { new: true }, (err, queryResult) => {
+            if (err) {
+                return ERROR.sendErrorResponse(res,
+                    `Error al intentar agregar comentario a la solicitud #${req.body.idSolicitud}`,
+                    `Error al agregar comentario a la solicitud ${req.body.idSolicitud} en la base de datos: ${err}`);
+            }
+
+            res.status(hsc.OK).json({ respuesta: queryResult });
+        });
     }
 };
 
