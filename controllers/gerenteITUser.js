@@ -1,14 +1,10 @@
 'use strict';
 
 const hsc = require('http-status-codes');
-const randString = require('randomstring');
 const moment = require('moment');
 
 const USUARIO = require('../models/usuario');
 const SOLICITUD = require('../models/solicitud');
-const MAIL = require('../util/mail');
-const CONFIG = require('../config');
-const TASK_SCHEDULER = require('../util/taskScheduler');
 const ERROR = require('../util/error');
 
 const gerenteUserController = {

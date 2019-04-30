@@ -40,7 +40,7 @@ const commonUserController = {
                     `Error al guardar solicitud en la base de datos: ${err}`);
             }
 
-            res.status(hsc.CREATED).json({ solicitud: solicitudStored});
+            res.status(hsc.CREATED).json({ solicitud: solicitudStored });
         });
     }
 };
