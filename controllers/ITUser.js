@@ -24,7 +24,8 @@ const ITUserController = {
     },
     getAllMySolicitudes: function (req, res) {
         const query = {
-            'UsuarioIT.IdUsuarioIT': req.params.idUsuarioIT
+            'UsuarioIT.IdUsuarioIT': req.params.idUsuarioIT,
+            'FechaTerminado': { $eq: null } // solo traer aquellas solicitudes que no hayan sido terminadas
         };
 
         SOLICITUD.modeloSolicitud.find(query, (err, queryResult) => {
@@ -59,14 +60,14 @@ const ITUserController = {
             }
         };
 
-        SOLICITUD.modeloSolicitud.findByIdAndUpdate(req.body.idSolicitud, updateQuery, (err, queryResult) => {
+        SOLICITUD.modeloSolicitud.findByIdAndUpdate(req.body.idSolicitud, updateQuery, { new: true }, (err, queryResult) => {
             if (err) {
                 return ERROR.sendErrorResponse(res,
                     `Error al intentar agregar comentario a la solicitud #${req.body.idSolicitud}`,
                     `Error al agregar comentario a la solicitud ${req.body.idSolicitud} en la base de datos: ${err}`);
             }
 
-            res.sendStatus(hsc.CREATED);
+            res.status(hsc.CREATED).json({ respuesta: queryResult });
         });
     },
     assignFechaEnProceso: function (req, res) {
