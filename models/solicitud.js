@@ -5,7 +5,7 @@ const autoIncrement = require('mongoose-auto-increment-reworked').MongooseAutoIn
 
 const SolicitudSchema = new mongoose.Schema({
     IdUsuario: Number,
-    UsuarioIT: { type: Object, default: null }, // Ejemplo: { IdUsuarioIT: 1, NombreCompleto: "Miguel Hernández"}
+    UsuarioIT: { IdUsuarioIT: { type: Number }, NombreCompleto: { type: String } }, // Ejemplo: { IdUsuarioIT: 1, NombreCompleto: "Miguel Hernández"}
     FechaCreacion: Date,
     FechaEnProceso: { type: Date, default: null },
     FechaTerminado: { type: Date, default: null },
