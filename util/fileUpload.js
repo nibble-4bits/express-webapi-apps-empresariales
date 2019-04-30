@@ -21,7 +21,7 @@ const fileUploadUtilController = {
                 const archivo = files[file];
                 const fileExtension = archivo.name.split('.')[1];
 
-                if (CONFIG.uploadLocally === true) {
+                if (CONFIG.uploadLocally === 'true') {
                     // Buscamos si el usuario envió algún archivo, 
                     // lo guardamos en la carpeta configurada como repositorio 
                     // y creamos la ruta que se guardará en base de datos
