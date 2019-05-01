@@ -6,17 +6,18 @@ const randString = require('randomstring');
 const USUARIO = require('../models/usuario');
 const TOKEN = require('../util/token');
 const MAIL = require('../util/mail');
+const CRYPTOGRAPHY = require('../util/cryptography');
 const CONFIG = require('../config');
 const TASK_SCHEDULER = require('../util/taskScheduler');
 const ERROR = require('../util/error');
 
-let arreglo = [];
+let arregloUsuariosInactivos = [];
 
 const loginController = {
     login: function (req, res) {
         const query = {
             Email: req.body.email,
-            Contrasena: req.body.contrasena
+            Contrasena: CRYPTOGRAPHY.encrypt(req.body.contrasena)
         };
 
         USUARIO.modeloUsuario.findOne(query, (err, queryResult) => {
@@ -44,7 +45,7 @@ const loginController = {
         let nuevoUsuario = new USUARIO.modeloUsuario({
             Nombre: req.body.nombre,
             Apellidos: req.body.apellidos,
-            Contrasena: req.body.contrasena,
+            Contrasena: CRYPTOGRAPHY.encrypt(req.body.contrasena),
             Email: req.body.email,
             Tipo: USUARIO.tipoUsuario.COMUN
         });
@@ -57,14 +58,14 @@ const loginController = {
             }
 
             const usuarioNoRegistrado = { usuarioId: usuarioStored._id, codigoSecreto: randString.generate() };
-            arreglo.push(usuarioNoRegistrado);
+            arregloUsuariosInactivos.push(usuarioNoRegistrado);
 
             // Programamos una tarea que se ejecutará una sola vez en 10 minutos
             // Si el usuario no ha activado su cuenta después de 10 minutos, tendrá que volver a registrarse
             TASK_SCHEDULER.scheduleTaskAndRunOnceIn10Minutes(() => {
-                const indice = arreglo.findIndex(x => { return x.codigoSecreto == usuarioNoRegistrado.codigoSecreto });
+                const indice = arregloUsuariosInactivos.findIndex(x => { return x.codigoSecreto == usuarioNoRegistrado.codigoSecreto });
                 if (indice >= 0) {
-                    arreglo.splice(indice, 1); // lo eliminamos del arreglo
+                    arregloUsuariosInactivos.splice(indice, 1); // lo eliminamos del arreglo
                     USUARIO.modeloUsuario.findByIdAndDelete(usuarioNoRegistrado.usuarioId); // eliminamos al usuario de la base de datos
                 }
             });
@@ -82,7 +83,7 @@ const loginController = {
                     <li>Nombre: ${usuarioStored.Nombre}</li>
                     <li>Apellidos: ${usuarioStored.Apellidos}</li>
                     <li>Email: ${usuarioStored.Email}</li>
-                    <li>Contraseña: ${usuarioStored.Contrasena.replace(/./g, '•')} 
+                    <li>Contraseña: ${req.body.contrasena.replace(/./g, '•')} 
                     (por razones de seguridad no mostramos su contraseña)</li>
                 </ul>`
             );
@@ -97,7 +98,7 @@ const loginController = {
         USUARIO.modeloUsuario.findOne(query, (err, queryResult) => {
             if (err) {
                 return ERROR.sendErrorResponse(res, 
-                    'Error al intentar registrar una nueva cuenta', 
+                    'Error al intentar buscar usuario en la base de datos', 
                     `Error al buscar usuario en la base de datos: ${err}`);
             }
 
@@ -105,7 +106,7 @@ const loginController = {
                 MAIL.sendMailHTML(query.Email,
                     'Recuperación de contraseña',
                     `<h1>Recupere su contraseña</h1>
-                    <p>Su contraseña es: ${queryResult.Contrasena}</p>
+                    <p>Su contraseña es: ${CRYPTOGRAPHY.decrypt(queryResult.Contrasena)}</p>
                     <p>Si usted no ha solicitado recuperar su contraseña, puede ignorar este correo</p>`);
                 res.status(hsc.OK).json({ respuesta: "Se ha enviado su contraseña al correo" });
             }
@@ -115,12 +116,12 @@ const loginController = {
         });
     },
     activateAccount: function (req, res) {
-        const indice = arreglo.findIndex(x => {
+        const indice = arregloUsuariosInactivos.findIndex(x => {
             return x.usuarioId == req.params.usuarioId && x.codigoSecreto == req.params.codigoSecreto
         });
 
         if (indice >= 0) {
-            arreglo.splice(indice, 1);
+            arregloUsuariosInactivos.splice(indice, 1);
 
             USUARIO.modeloUsuario.findByIdAndUpdate(req.params.usuarioId, { Activo: true }, (err, queryResult) => {
                 if (err) {
@@ -129,11 +130,11 @@ const loginController = {
                         `Error al actualizar usuario en la base de datos: ${err}`);
                 }
 
-                res.status(hsc.OK).json('¡Su cuenta ha sido activada con éxito!');
+                res.status(hsc.OK).send('¡Su cuenta ha sido activada con éxito!');
             });
         }
         else {
-            res.json('El enlace para activar su cuenta ha caducado');
+            res.send('El enlace para activar su cuenta ha caducado');
         }
     }
 };
