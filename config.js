@@ -16,5 +16,6 @@ module.exports = {
         accessKey: process.env.CLOUDCUBE_ACCESS_KEY_ID,
         secretKey: process.env.CLOUDCUBE_SECRET_ACCESS_KEY,
         url: process.env.CLOUDCUBE_URL
-    }
+    },
+    cryptoSecretKey: process.env.CRYPTO_SECRET_KEY
 };
