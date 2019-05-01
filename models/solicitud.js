@@ -24,5 +24,17 @@ module.exports = {
         BAJA: 0,
         MEDIA: 1,
         ALTA: 2
+    },
+    getPrioridadString: function (prioridadNumero) {
+        if (prioridadNumero === 0) {
+            return 'Baja';
+        }
+        else if (prioridadNumero === 1) {
+            return 'Media';
+        }
+        else if (prioridadNumero === 2) {
+            return 'Alta';
+        }
+        return 'Desconocida';
     }
 };
