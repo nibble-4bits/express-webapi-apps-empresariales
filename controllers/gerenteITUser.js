@@ -32,7 +32,7 @@ const gerenteUserController = {
         SOLICITUD.modeloSolicitud.find(queryUsuarioIT, (err, queryResult) => {
             if (err) {
                 return ERROR.sendErrorResponse(res,
-                    `Error al intentar buscar solicitudes del usuario IT: ${queryUsuarioIT.UsuarioIT}`,
+                    `Error al intentar buscar solicitudes del usuario IT: $${req.params.nombre} ${req.params.apellidos}`,
                     `Error al buscar solicitudes en la base de datos: ${err}`);
             }
 
