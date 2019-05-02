@@ -3,39 +3,20 @@
 const hsc = require('http-status-codes');
 const moment = require('moment');
 
-const USUARIO = require('../models/usuario');
 const SOLICITUD = require('../models/solicitud');
 const ERROR = require('../util/error');
 
 const gerenteUserController = {
     getSolicitudesByCommonUser: function (req, res) {
-        let idUsuario = 0;
-
-        const queryUsuario = {
-            Nombre: req.params.nombre,
-            Apellidos: req.params.apellidos
-        };
-
-        // Buscamos primero el Id del usuario en base a su nombre completo
-        USUARIO.modeloUsuario.findOne(queryUsuario, (err, queryResult) => {
-            if (err) {
-                return ERROR.sendErrorResponse(res,
-                    'Error al intentar buscar usuario',
-                    `Error al buscar usuario en la base de datos: ${err}`);
-            }
-
-            idUsuario = queryResult._id;
-        });
-
         const querySolicitud = {
-            IdUsuario: idUsuario
+            'UsuarioComun.NombreCompleto': `${req.params.nombre} ${req.params.apellidos}`
         };
 
         // Despues buscamos las solicitudes en base al id del usuario
         SOLICITUD.modeloSolicitud.find(querySolicitud, (err, queryResult) => {
             if (err) {
                 return ERROR.sendErrorResponse(res,
-                    `Error al intentar buscar solicitudes del usuario ${idUsuario}`,
+                    `Error al intentar buscar solicitudes del usuario ${req.params.nombre} ${req.params.apellidos}`,
                     `Error al buscar solicitudes en la base de datos: ${err}`);
             }
 
@@ -44,9 +25,7 @@ const gerenteUserController = {
     },
     getSolicitudesByITUser: function (req, res) {
         const queryUsuarioIT = {
-            UsuarioIT: {
-                NombreCompleto: `${req.params.nombre} ${req.params.apellidos}`
-            }
+            'UsuarioIT.NombreCompleto': `${req.params.nombre} ${req.params.apellidos}`
         };
 
         // Buscamos las solicitudes en base al UsuarioIT que las atendió

@@ -11,7 +11,7 @@ const ERROR = require('../util/error');
 const commonUserController = {
     getAllMySolicitudes: function (req, res) {
         const query = {
-            IdUsuario: req.params.idUsuario
+            'UsuarioComun.IdUsuarioComun': req.params.idUsuario
         };
 
         SOLICITUD.modeloSolicitud.find(query, (err, queryResult) => {
@@ -28,7 +28,7 @@ const commonUserController = {
         const filePath = FILE_UPLOAD.uploadFile(req.files);
 
         let nuevaSolicitud = new SOLICITUD.modeloSolicitud({
-            IdUsuario: req.body.idUsuario,
+            UsuarioComun: { IdUsuarioComun: req.body.idUsuario, NombreCompleto: req.body.nombreCompleto },
             FechaCreacion: req.body.fechaCreacion,
             Razon: req.body.razon,
             RutaDocumento: filePath,
@@ -52,8 +52,9 @@ const commonUserController = {
 
             // Se envía un correo a todo el personal de IT notificando la creación de una nueva solicitud
             MAIL.sendMailToManyHTML(emailsITStaff, 
-                `El usuario ${solicitudStored.IdUsuario} ha creado una nueva solicitud`,
+                `El usuario ${solicitudStored.UsuarioComun.IdUsuarioComun} ha creado una nueva solicitud`,
                 `<h1>Información de la solicitud</h1>
+                <p><b>Creada por: </b>${solicitudStored.UsuarioComun.NombreCompleto}</p>
                 <p><b>Fecha de creación: </b>${new Date(solicitudStored.FechaCreacion).toLocaleString()}</p>
                 <p><b>Razón: </b>${solicitudStored.Razon}</p>
                 <p><b>Ruta del documento: </b>
