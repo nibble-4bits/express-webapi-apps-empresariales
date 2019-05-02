@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const autoIncrement = require('mongoose-auto-increment-reworked').MongooseAutoIncrementID;
 
 const SolicitudSchema = new mongoose.Schema({
-    IdUsuario: Number,
+    UsuarioComun: { IdUsuarioComun: { type: Number }, NombreCompleto: { type: String } }, // Ejemplo: { IdUsuarioComun: 3, NombreCompleto: "Pedro De Anda"}
     UsuarioIT: { IdUsuarioIT: { type: Number }, NombreCompleto: { type: String } }, // Ejemplo: { IdUsuarioIT: 1, NombreCompleto: "Miguel Hernández"}
     FechaCreacion: Date,
     FechaEnProceso: { type: Date, default: null },
