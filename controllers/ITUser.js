@@ -44,6 +44,7 @@ const ITUserController = {
             UsuarioIT: { IdUsuarioIT: req.body.idUsuarioIT, NombreCompleto: req.body.nombreCompleto },
         };
 
+        console.log(req);
         console.log('Enviando: ');
         console.log(updateQuery);
 
