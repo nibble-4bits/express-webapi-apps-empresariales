@@ -9,7 +9,7 @@ const ITUserController = {
     getAllUnattendedSolicitudes: function (req, res) {
         // Solicitudes no atendidas son aquellas que no tienen un Usuario IT que las esté atendiendo
         const query = {
-            UsuarioIT: null
+            'UsuarioIT.IdUsuarioIT': -1
         };
 
         SOLICITUD.modeloSolicitud.find(query, (err, queryResult) => {
