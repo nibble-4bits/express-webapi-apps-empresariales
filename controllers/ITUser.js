@@ -4,7 +4,9 @@ const hsc = require('http-status-codes');
 const moment = require('moment');
 
 const SOLICITUD = require('../models/solicitud');
+const USUARIO = require('../models/usuario');
 const ERROR = require('../util/error');
+const MAIL = require('../util/mail');
 
 const ITUserController = {
     getAllUnattendedSolicitudes: function (req, res) {
@@ -50,7 +52,7 @@ const ITUserController = {
                     `Error al intentar agregar comentario a la solicitud #${req.body.idSolicitud}`,
                     `Error al agregar comentario a la solicitud ${req.body.idSolicitud} en la base de datos: ${err}`);
             }
-
+            
             res.status(hsc.OK).json({ respuesta: queryResult });
         });
     },
@@ -95,6 +97,21 @@ const ITUserController = {
                     `Error al intentar agregar comentario a la solicitud #${req.body.idSolicitud}`,
                     `Error al agregar comentario a la solicitud ${req.body.idSolicitud} en la base de datos: ${err}`);
             }
+
+            USUARIO.modeloUsuario.findById(queryResult.UsuarioComun.IdUsuarioComun, (err, queryUserResult) => {
+                if (err) {
+                    return ERROR.sendErrorResponse(res,
+                        `Error al intentar buscar Id del usuario #${queryResult.UsuarioComun.IdUsuarioComun}`,
+                        `Error al buscar Id del usuario ${queryResult.UsuarioComun.IdUsuarioComun} en la base de datos: ${err}`);
+                }
+
+                MAIL.sendMailHTML(queryUserResult.Email, 
+                                 'Su solicitud está siendo atendida',
+                                 `<h1>Gracias por esperar</h1>
+                                 <p><b>Atiende: </b>${queryResult.UsuarioIT.NombreCompleto}</p>
+                                 <p><b>Comentario </b>
+                                 ${req.body.comentario ? req.body.comentario : 'No se añadió ningún comentario'}</p>`);
+            });
 
             res.status(hsc.OK).json({ respuesta: queryResult });
         });
@@ -145,6 +162,22 @@ const ITUserController = {
                     `Error al intentar agregar comentario a la solicitud #${req.body.idSolicitud}`,
                     `Error al agregar comentario a la solicitud ${req.body.idSolicitud} en la base de datos: ${err}`);
             }
+
+            USUARIO.modeloUsuario.findById(queryResult.UsuarioComun.IdUsuarioComun, (err, queryUserResult) => {
+                if (err) {
+                    return ERROR.sendErrorResponse(res,
+                        `Error al intentar buscar Id del usuario #${queryResult.UsuarioComun.IdUsuarioComun}`,
+                        `Error al buscar Id del usuario ${queryResult.UsuarioComun.IdUsuarioComun} en la base de datos: ${err}`);
+                }
+
+                MAIL.sendMailHTML(queryUserResult.Email, 
+                                 'Su solicitud se ha resuelto',
+                                 `<h1>Gracias por utilizar nuestro servicio</h1>
+                                 <p>Esperamos que siga notificándonos cualquier molestia o inquietud</p>
+                                 <p><b>Atendió: </b>${queryResult.UsuarioIT.NombreCompleto}</p>
+                                 <p><b>Comentario </b>
+                                 ${req.body.comentario ? req.body.comentario : 'No se añadió ningún comentario'}</p>`);
+            });
 
             res.status(hsc.OK).json({ respuesta: queryResult });
         });
