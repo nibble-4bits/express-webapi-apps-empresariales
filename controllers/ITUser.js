@@ -107,20 +107,41 @@ const ITUserController = {
     },
     assignFechaTerminado: function (req, res) {
         let updateQuery;
+        let fechaCreacion;
         let fechaActual = new Date().toJSON();
 
+        SOLICITUD.modeloSolicitud.findById(req.body.idSolicitud, (err, queryResult) => {
+            if (err) {
+                return ERROR.sendErrorResponse(res,
+                    `Error al intentar buscar la solicitud #${req.body.idSolicitud}`,
+                    `Error al buscar la solicitud ${req.body.idSolicitud} en la base de datos: ${err}`);
+            }
+
+            if (!queryResult.FechaEnProceso) {
+                return;
+            }
+            fechaCreacion = queryResult.FechaCreacion;
+        });
+
+        let fechaCreacionMoment = moment(fechaCreacion);
+        let fechaActualMoment = moment(fechaActual);
+        let duracion = fechaActualMoment.diff(fechaCreacionMoment, 'days') + 'd ' + 
+                       (fechaActualMoment.diff(fechaCreacionMoment, 'hours') % 24) + 'h ' +
+                       (fechaActualMoment.diff(fechaCreacionMoment, 'minutes') % 60) + 'm ' +
+                       (fechaActualMoment.diff(fechaCreacionMoment, 'seconds') % 60) + 's';
         if (req.body.comentario) {
             updateQuery = {
                 FechaTerminado: fechaActual,
                 $push: {
                     ComentariosIT: { Comentario: req.body.comentario, Fecha: fechaActual }
-                }
+                },
+                Duracion: duracion
             };
         }
         else {
             updateQuery = {
                 FechaTerminado: fechaActual,
-                //Duracion: 
+                Duracion: duracion
             };
         }
 
