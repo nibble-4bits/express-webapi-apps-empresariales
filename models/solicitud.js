@@ -12,7 +12,8 @@ const SolicitudSchema = new mongoose.Schema({
     Razon: String,
     ComentariosIT: Array, // Ejemplo: { Comentario: "Ejemplo Comentario", Fecha: 2019-04-28T22:35:23.904Z }
     RutaDocumento: { type: String, default: null },
-    Prioridad: { type: Number, min: 0, max: 2 } // 0 - BAJA, 1 - MEDIA, 2 - ALTA
+    Prioridad: { type: Number, min: 0, max: 2 }, // 0 - BAJA, 1 - MEDIA, 2 - ALTA
+    Duracion: { type: String, default: null }
 });
 
 // Agregamos el plugin que permite que cada _id sea autoincrementable y numérico

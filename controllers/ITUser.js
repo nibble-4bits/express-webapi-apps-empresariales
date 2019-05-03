@@ -1,6 +1,7 @@
 'use strict';
 
 const hsc = require('http-status-codes');
+const moment = require('moment');
 
 const SOLICITUD = require('../models/solicitud');
 const ERROR = require('../util/error');
@@ -43,6 +44,9 @@ const ITUserController = {
             UsuarioIT: { IdUsuarioIT: req.body.idUsuarioIT, NombreCompleto: req.body.nombreCompleto },
         };
 
+        console.log('Enviando: ');
+        console.log(updateQuery);
+
         SOLICITUD.modeloSolicitud.findByIdAndUpdate(req.body.idSolicitud, updateQuery, { new: true }, (err, queryResult) => {
             if (err) {
                 return ERROR.sendErrorResponse(res,
@@ -50,6 +54,8 @@ const ITUserController = {
                     `Error al agregar comentario a la solicitud ${req.body.idSolicitud} en la base de datos: ${err}`);
             }
 
+            console.log('Resultado: ');
+            console.log(queryResult);
             res.status(hsc.OK).json({ respuesta: queryResult });
         });
     },
@@ -112,7 +118,8 @@ const ITUserController = {
         }
         else {
             updateQuery = {
-                FechaTerminado: fechaActual
+                FechaTerminado: fechaActual,
+                //Duracion: 
             };
         }
 
