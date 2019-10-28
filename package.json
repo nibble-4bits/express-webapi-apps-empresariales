@@ -19,7 +19,7 @@
     "jsonwebtoken": "^8.5.1",
     "mime-types": "^2.1.24",
     "moment": "^2.24.0",
-    "mongoose": "^5.5.2",
+    "mongoose": "^5.7.5",
     "mongoose-auto-increment-reworked": "^1.2.1",
     "node-cron": "^2.0.3",
     "nodemailer": "^6.1.1",
